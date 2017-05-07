@@ -11,7 +11,7 @@ import com.lijie.empty.DUser;
 import com.lijie.util.HibernateSessionFactory;
 
 public class HibernateTest {
-	public Session session;
+	public static Session session = null;
 
 	@Test
 	public void Test() {
@@ -19,10 +19,9 @@ public class HibernateTest {
 		ht.getCurrentSession();
 		ht.saveUser();
 		System.out.println("保存用户，增加一条记录！");
-
-		// ht.queryUser();
-		// ht.updateUser();
-		// System.out.println("修改用户，修改一条记录！");
+		ht.queryUser();
+		ht.updateUser();
+		System.out.println("修改用户，修改一条记录！");
 		ht.queryUser();
 		ht.deleteUser();
 		System.out.println("删除用户，删除一条记录！");
@@ -38,11 +37,11 @@ public class HibernateTest {
 	 * @date: 2017年5月4日 void
 	 * @update [日期YYYY-MM-DD][更改人姓名][变更描述]
 	 */
-	private void updateUser() {
-		System.out.println("更新用户信息");
+	public void updateUser() {
+		getCurrentSession();
 		Transaction t2 = session.beginTransaction();
-		DUser dUser = session.get(DUser.class, 2);
-		dUser.setNickname("李四");
+		DUser dUser = session.get(DUser.class, 5);
+		dUser.setNickname("王五");
 		session.update(dUser);
 		t2.commit();
 	}
@@ -71,7 +70,7 @@ public class HibernateTest {
 		// TODO 删除一条记录的方法
 		System.out.println("删除一条记录的方法");
 		Transaction t3 = session.beginTransaction();
-		DUser dUser = session.get(DUser.class, 2);
+		DUser dUser = session.get(DUser.class, 8);
 		session.delete(dUser);
 		t3.commit();
 	}
@@ -83,11 +82,10 @@ public class HibernateTest {
 	 * @date: 2017年5月4日 void
 	 * @update [日期YYYY-MM-DD][更改人姓名][变更描述]
 	 */
-	private void queryUser() {
+	public void queryUser() {
 		// TODO Auto-generated method stub
-		System.out.println("查询一条记录的方法");
 		try {
-			Query query = session.createQuery("from d_user");
+			Query query = session.createQuery("from DUser");
 			List<?> list = query.list();
 			for (int i = 0; i < list.size(); i++) {
 				DUser dUser = (DUser) list.get(i);
@@ -95,6 +93,7 @@ public class HibernateTest {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
 	}
 
@@ -105,21 +104,23 @@ public class HibernateTest {
 	 * @date: 2017年5月4日 void
 	 * @update [日期YYYY-MM-DD][更改人姓名][变更描述]
 	 */
-	private void saveUser() {
+	public void saveUser() {
 		// TODO 插入一条记录
-		System.out.println("插入一条记录");
 		Transaction t1 = session.beginTransaction();
 		DUser dUser = new DUser();
-		dUser.setEmail("www.609446687@qq.com");
+		dUser.setEmail("www.46687@qq.com");
 		dUser.setNickname("李杰");
 		dUser.setPassword("lijie123");
 		dUser.setIsEmailVerify("YES");
 		dUser.setEmailVerifyCode("hfakjhfdsauigfkujgfdrhasgu");
 		dUser.setLastLoginTime(System.currentTimeMillis());
 		dUser.setLastLoginIp("192.168.1.1");
+		dUser.setUserIntegral(100);
+		session.save(dUser);
 		try {
 			t1.commit();
 		} catch (Exception e) {
+			t1.rollback();
 			e.printStackTrace();
 		}
 	}
